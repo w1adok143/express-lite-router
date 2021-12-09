@@ -1,5 +1,5 @@
 # express-lite-router
-Express router based on laravel router.
+
 
 ## Installation
 ```bash
