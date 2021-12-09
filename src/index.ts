@@ -177,6 +177,5 @@ class Router {
     }
 }
 
-export default function(config: Config): Router {
-    return new Router(config.router, config.dir, config.prefix, config.ext);
-}
+const router = (config: Config): Router => new Router(config.router, config.dir, config.prefix, config.ext);
+export { router as Router };
