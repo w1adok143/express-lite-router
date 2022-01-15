@@ -1,5 +1,5 @@
 # express-lite-router
-Express router wrapper for backend, use Async/Await method in controller, use webhook 'init' if need
+Express router wrapper for backend, can use Async/Await method in controller, can use webhook 'init'
 
 ## Installation
 ```bash
@@ -7,26 +7,12 @@ npm install express-lite-router
 ```
 
 ## Creating controller
-```js
-import { Request, Response } from 'express';
+Must be extends from 'Controller' and will be available - this.$context(), this.$request(), this.$response()
 
-/**
- * @class HomeController
- */
-export default class HomeController {
-    private request: Request;
-    private response: Response;
-    
-    /**
-     * Init
-     * 
-     * @param request 
-     * @param response 
-     */
-    constructor(request: Request, response: Response) {
-        this.request = request;
-        this.response = response;
-    }
+```js
+import { Controller } from 'express-lite-router';
+
+export default class HomeController extends Controller {
     
     /**
      * Webhook
@@ -39,10 +25,10 @@ export default class HomeController {
      * Index
      */
     public index() {
-        return this.response.status(200).json({
+        return this.$response().status(200).json({
             success: true,
             data: {
-                message: 'Hello world'
+                message: 'Hello World!'
             }
         });
     }
@@ -50,17 +36,30 @@ export default class HomeController {
 ```
 
 ## Creating router
+
 ```js
 import express, { Application } from 'express';
 import { Router } from 'express-lite-router';
+import mariadb from 'mariadb';
 
+// Express router wrapper
 const router = Router({
-  router: express.Router(),
-  dir?: 'src',
-  prefix?: '',
-  ext?: '.ts' 
+
+    // Express router
+    router: express.Router(), 
+
+    // Path, where controllers stored
+    dir: 'src/backend', 
+
+    // Dependencies for controller. To get dependencies, need call 'this.$context()' in controller
+    context?: {
+        pool: mariadb.createPool({ host: 'mydb.com', user:'myUser', password: 'myPassword' })
+    }
 });
+
 router.get('/', 'HomeController@index');
+
 const app: Application = express();
 app.use(router.init());
+app.listen(3000, () => console.log(`Example app listening at http://localhost:3000`));
 ```
