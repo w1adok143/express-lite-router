@@ -1,11 +1,11 @@
 import { Model } from '../lib';
 import { Pool } from 'mariadb';
 
-export default class BookModel extends Model {
+export default class HomeModel extends Model {
     private readonly id;
 
     /**
-     * BookModel constructor
+     * HomeModel constructor
      *
      * @param id
      */

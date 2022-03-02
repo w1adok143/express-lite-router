@@ -1,8 +1,7 @@
-import {ApiError, Controller} from '../lib';
-import Model from "./BookModel";
+import { ApiError, Controller } from '../lib';
+import Model from './HomeModel';
 
-export default class BookController extends Controller {
-    // @ts-ignore
+export default class HomeController extends Controller {
     private model: Model;
 
     /**
