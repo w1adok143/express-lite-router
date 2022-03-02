@@ -1,23 +1,26 @@
-import { Controller } from '../lib';
+import {ApiError, Controller} from '../lib';
+import Model from "./BookModel";
 
-export default class HomeController extends Controller {
-    
+export default class BookController extends Controller {
+    // @ts-ignore
+    private model: Model;
+
     /**
      * Webhook
      */
-    public init() {
-        console.log("Hello i'm webhook");
+    public async init() {
+        this.model = await this.$create(Model, 1);
     }
 
     /**
      * Index
      */
-    public index() {
-        return this.$response().status(200).json({
-            success: true,
-            data: {
-                message: 'Hello world'
-            }
-        });
+    public async index() {
+        try {
+            return this.success({ rows: await this.model.select() });
+        } catch (err) {
+            // @ts-ignore
+            return this.error(err);
+        }
     }
 }
