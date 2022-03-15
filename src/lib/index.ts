@@ -2,20 +2,15 @@ import { Router as Express, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
 
-// Type
 type Context = Record<string, any>;
 type Dir = string;
 type Callback = (request: Request, response: Response, next?: NextFunction) => void;
 type Path = string;
 type Action = string;
 type Message = Record<string, string>;
-
-// IConfig
 interface Config {
     router: Express, dir: Dir, context?: Context
 }
-
-// Exception
 class ApiError extends Error {
     public status;
     public code;
@@ -34,8 +29,6 @@ class ApiError extends Error {
         this.code = code;
     }
 }
-
-// Parent
 abstract class Base {
     private context: Context;
 
@@ -60,7 +53,6 @@ abstract class Base {
         if ('$inject' in obj) {
             obj.$inject(this.$context);
         }
-
         if ('init' in obj) {
             // @ts-ignore
             await obj.init();
@@ -75,11 +67,6 @@ abstract class Base {
      * @param message
      */
     protected $l(message: Message) {
-
-        if (!this.$lang) {
-            throw new ApiError(`Not found 'lang' in request`);
-        }
-
         if (!message.hasOwnProperty(this.$lang)) {
             throw new ApiError(`Not found '${this.$lang}' in ${JSON.stringify(message)}`);
         }
@@ -97,17 +84,13 @@ abstract class Base {
     /**
      * Get lang
      */
-    protected get $lang(): undefined | string {
-        return this.$context.request.body.lang;
+    protected get $lang(): string {
+        return this.$context.request.query.lang || this.$context.request.body.lang || 'en';
     }
 }
-
-// Base model
 abstract class Model extends Base {
 
 }
-
-// Base controller
 abstract class Controller extends Base {
 
     /**
@@ -152,8 +135,6 @@ abstract class Controller extends Base {
         });
     }
 }
-
-// Router
 class Router {
     private readonly router;
     private readonly dir;
@@ -205,14 +186,11 @@ class Router {
             if (!(method in obj)) {
                 throw new Error(`Not found '${method}' in ${file}`);
             }
-
             if (!('$inject' in obj)) {
                 throw new Error(`Not found '$inject'`);
             }
 
-            obj.$inject({
-                ...this.context, request, response
-            });
+            obj.$inject({ ...this.context, request, response });
 
             if ('init' in obj) {
                 await obj.init();
@@ -239,14 +217,11 @@ class Router {
             if (!(method in obj)) {
                 throw new Error(`Not found '${method}' in ${file}`);
             }
-
             if (!('$inject' in obj)) {
                 throw new Error(`Not found '$inject'`);
             }
 
-            obj.$inject({
-                ...this.context, request, response
-            });
+            obj.$inject({ ...this.context, request, response });
 
             if ('init' in obj) {
                 await obj.init();
@@ -273,14 +248,11 @@ class Router {
             if (!(method in obj)) {
                 throw new Error(`Not found '${method}' in ${file}`);
             }
-
             if (!('$inject' in obj)) {
                 throw new Error(`Not found '$inject'`);
             }
 
-            obj.$inject({
-                ...this.context, request, response
-            });
+            obj.$inject({ ...this.context, request, response });
 
             if ('init' in obj) {
                 await obj.init();
@@ -307,14 +279,11 @@ class Router {
             if (!(method in obj)) {
                 throw new Error(`Not found '${method}' in ${file}`);
             }
-
             if (!('$inject' in obj)) {
                 throw new Error(`Not found '$inject'`);
             }
 
-            obj.$inject({
-                ...this.context, request, response
-            });
+            obj.$inject({ ...this.context, request, response });
 
             if ('init' in obj) {
                 await obj.init();
@@ -341,14 +310,11 @@ class Router {
             if (!(method in obj)) {
                 throw new Error(`Not found '${method}' in ${file}`);
             }
-
             if (!('$inject' in obj)) {
                 throw new Error(`Not found '$inject'`);
             }
 
-            obj.$inject({
-                ...this.context, request, response
-            });
+            obj.$inject({ ...this.context, request, response });
 
             if ('init' in obj) {
                 await obj.init();
@@ -380,7 +346,6 @@ class Router {
     }
 }
 
-// Router instance
 const r = (config: Config): Router => new Router(config.router, config.dir, config.context);
 
 export {

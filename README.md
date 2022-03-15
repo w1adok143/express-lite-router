@@ -108,11 +108,10 @@ export default class HomeModel extends Model {
 
 ## Set 'lang' app
 ```js
-{
-    lang: "en"
-}
+// OR http://localhost:3000?lang=ua
+// OR { lang: 'ua' }
 
-console.log(this.$lang); // 'en'
+console.log(this.$lang); // 'ua'
 ```
 
 ## Can use '$request'

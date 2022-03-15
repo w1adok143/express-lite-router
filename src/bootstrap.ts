@@ -11,7 +11,7 @@ const router = Router({
             user: 'myUser',
             password: 'myPassword',
             connectionLimit: 5
-        }),
+        })
     }
 });
 
