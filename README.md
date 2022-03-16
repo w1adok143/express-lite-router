@@ -108,7 +108,7 @@ export default class HomeModel extends Model {
 
 ## Set 'lang' app
 ```js
-// OR http://localhost:3000/api/?lang=ua
+// OR http://localhost:3000/api?lang=ua
 // OR { lang: 'ua' }
 
 console.log(this.$lang); // 'ua'
