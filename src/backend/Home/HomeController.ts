@@ -1,5 +1,5 @@
-import { ApiError, Controller } from '../lib';
-import Model from './HomeModel';
+import {Controller} from "@/lib";
+import Model from "@backend/Home/HomeModel";
 
 export default class HomeController extends Controller {
     private model: Model;
@@ -16,10 +16,9 @@ export default class HomeController extends Controller {
      */
     public async index() {
         try {
-            return this.success({ rows: await this.model.select() });
-        } catch (err) {
-            // @ts-ignore
-            return this.error(err);
+            return this.success({rows: await this.model.select()});
+        } catch (e) {
+            return this.error(e);
         }
     }
 }

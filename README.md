@@ -7,9 +7,9 @@ npm i express-lite-router
 ## Usage
 
 ```js
-import express, { Application } from 'express';
-import mariadb from 'mariadb';
-import { Router } from 'express-lite-router';
+import {Router} from "express-lite-router";
+import express, {Application} from "express";
+import mariadb from "mariadb";
 
 const router = Router({
     router: express.Router(),
@@ -24,7 +24,7 @@ const router = Router({
     }
 });
 
-router.get('/', 'HomeController@index');
+router.get('/', 'Home/HomeController@index');
 
 const app: Application = express();
 app.use(express.json());
@@ -37,8 +37,8 @@ app.listen(3000, () => console.log('Development server http://localhost:3000 sta
 Your controller must be extended from 'Controller'
 
 ```js
-import { Controller } from 'express-lite-router';
-import Model from './HomeModel';
+import {Controller} from "express-lite-router";
+import Model from "@backend/Home/HomeModel";
 
 export default class HomeController extends Controller {
     private model: Model;
@@ -55,9 +55,9 @@ export default class HomeController extends Controller {
      */
     public async index() {
         try {
-            return this.success({ rows: await this.model.select() });
-        } catch (err) {
-            return this.error(err);
+            return this.success({rows: await this.model.select()});
+        } catch (e) {
+            return this.error(e);
         }
     }
 }
@@ -66,8 +66,8 @@ export default class HomeController extends Controller {
 Your model must be extended from 'Model'
 
 ```js
-import { Model } from 'express-lite-router';
-import { Pool } from 'mariadb';
+import {Model} from "express-lite-router";
+import {Pool} from "mariadb";
 
 export default class HomeModel extends Model {
     private id;
@@ -166,18 +166,18 @@ this.model = await this.$create(Model, 1);
 ```js
 try {
     return this.success(); // json
-} catch (err) {
+} catch (e) {
     
 }
 ```
 
-## Can use 'error(err)'
+## Can use 'error(e)'
 
 ```js
 try {
     
-} catch (err) {
-    return this.error(err); // json
+} catch (e) {
+    return this.error(e); // json
 }
 
 ```
@@ -186,7 +186,7 @@ try {
 ```js
 try {
     throw new ApiError('Not found', 404);
-} catch (err) {
-    return this.error(err); // json
+} catch (e) {
+    return this.error(e); // json
 }
 ```

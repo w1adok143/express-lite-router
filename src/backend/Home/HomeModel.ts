@@ -1,5 +1,5 @@
-import { Model } from '../lib';
-import { Pool } from 'mariadb';
+import {Model} from "@/lib";
+import {Pool} from "mariadb";
 
 export default class HomeModel extends Model {
     private readonly id;

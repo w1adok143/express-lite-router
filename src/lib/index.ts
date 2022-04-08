@@ -1,6 +1,6 @@
-import { Router as Express, Request, Response, NextFunction } from 'express';
-import path from 'path';
-import fs from 'fs';
+import {Router as Express, Request, Response, NextFunction} from "express";
+import path from "path";
+import fs from "fs";
 
 type Context = Record<string, any>;
 type Dir = string;
@@ -22,7 +22,7 @@ class ApiError extends Error {
      * @param status
      * @param code
      */
-    constructor(message: string, status: number = 400, code: number | string = 0) {
+    public constructor(message: string, status: number = 400, code: number | string = 0) {
         super(message);
 
         this.status = status;
@@ -47,14 +47,13 @@ abstract class Base {
      * @param model
      * @param params
      */
-    protected async $create<T extends Model, A extends Array<any>>(model: {new (...params: [...A]): T}, ...params: [...A]) {
+    protected async $create<T extends Model | Record<string, any>, A extends Array<any>>(model: {new (...params: [...A]): T}, ...params: [...A]) {
         const obj = new model(...params);
 
         if ('$inject' in obj) {
             obj.$inject(this.$context);
         }
         if ('init' in obj) {
-            // @ts-ignore
             await obj.init();
         }
 
@@ -147,7 +146,7 @@ class Router {
      * @param dir
      * @param context
      */
-    constructor(router: Express, dir: Dir, context?: Context) {
+    public constructor(router: Express, dir: Dir, context?: Context) {
         this.router = router;
         this.dir = dir;
         this.context = context;
@@ -171,7 +170,7 @@ class Router {
 
     /**
      * Get request
-     * 
+     *
      * @param path
      * @param action
      */
@@ -179,30 +178,30 @@ class Router {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
-        this.router.get(path, async (request: Request, response: Response) => {
+        this.router.get(path, async (request: Request, response: Response, next: NextFunction) => {
             const Class = require(file).default;
             const obj = new Class();
 
-            if (!(method in obj)) {
-                throw new Error(`Not found '${method}' in ${file}`);
-            }
-            if (!('$inject' in obj)) {
-                throw new Error(`Not found '$inject'`);
-            }
+            try {
+                if (!(method in obj)) {
+                    throw new Error(`Not found '${method}' in ${file}`);
+                }
+                if (!('$inject' in obj)) {
+                    throw new Error(`Not found '$inject'`);
+                }
 
-            obj.$inject({ ...this.context, request, response });
-
-            if ('init' in obj) {
-                await obj.init();
+                obj.$inject({...this.context, request, response});
+                if ('init' in obj) await obj.init();
+                await obj[method]();
+            } catch (e) {
+                next(e);
             }
-
-            await obj[method]();
         });
     };
 
     /**
      * Post request
-     * 
+     *
      * @param path
      * @param action
      */
@@ -210,30 +209,30 @@ class Router {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
-        this.router.post(path, async (request: Request, response: Response) => {
+        this.router.post(path, async (request: Request, response: Response, next: NextFunction) => {
             const Class = require(file).default;
             const obj = new Class();
 
-            if (!(method in obj)) {
-                throw new Error(`Not found '${method}' in ${file}`);
-            }
-            if (!('$inject' in obj)) {
-                throw new Error(`Not found '$inject'`);
-            }
+            try {
+                if (!(method in obj)) {
+                    throw new Error(`Not found '${method}' in ${file}`);
+                }
+                if (!('$inject' in obj)) {
+                    throw new Error(`Not found '$inject'`);
+                }
 
-            obj.$inject({ ...this.context, request, response });
-
-            if ('init' in obj) {
-                await obj.init();
+                obj.$inject({...this.context, request, response});
+                if ('init' in obj) await obj.init();
+                await obj[method]();
+            } catch (e) {
+                next(e);
             }
-
-            await obj[method]();
         });
     }
 
     /**
      * Put request
-     * 
+     *
      * @param path
      * @param action
      */
@@ -241,30 +240,30 @@ class Router {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
-        this.router.put(path, async (request: Request, response: Response) => {
+        this.router.put(path, async (request: Request, response: Response, next: NextFunction) => {
             const Class = require(file).default;
             const obj = new Class();
 
-            if (!(method in obj)) {
-                throw new Error(`Not found '${method}' in ${file}`);
-            }
-            if (!('$inject' in obj)) {
-                throw new Error(`Not found '$inject'`);
-            }
+            try {
+                if (!(method in obj)) {
+                    throw new Error(`Not found '${method}' in ${file}`);
+                }
+                if (!('$inject' in obj)) {
+                    throw new Error(`Not found '$inject'`);
+                }
 
-            obj.$inject({ ...this.context, request, response });
-
-            if ('init' in obj) {
-                await obj.init();
+                obj.$inject({...this.context, request, response});
+                if ('init' in obj) await obj.init();
+                await obj[method]();
+            } catch (e) {
+                next(e);
             }
-
-            await obj[method]();
         });
     };
 
     /**
      * Patch request
-     * 
+     *
      * @param path
      * @param action
      */
@@ -272,30 +271,30 @@ class Router {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
-        this.router.patch(path, async (request: Request, response: Response) => {
+        this.router.patch(path, async (request: Request, response: Response, next: NextFunction) => {
             const Class = require(file).default;
             const obj = new Class();
 
-            if (!(method in obj)) {
-                throw new Error(`Not found '${method}' in ${file}`);
-            }
-            if (!('$inject' in obj)) {
-                throw new Error(`Not found '$inject'`);
-            }
+            try {
+                if (!(method in obj)) {
+                    throw new Error(`Not found '${method}' in ${file}`);
+                }
+                if (!('$inject' in obj)) {
+                    throw new Error(`Not found '$inject'`);
+                }
 
-            obj.$inject({ ...this.context, request, response });
-
-            if ('init' in obj) {
-                await obj.init();
+                obj.$inject({...this.context, request, response});
+                if ('init' in obj) await obj.init();
+                await obj[method]();
+            } catch (e) {
+                next(e);
             }
-
-            await obj[method]();
         });
     };
 
     /**
      * Delete request
-     * 
+     *
      * @param path
      * @param action
      */
@@ -303,30 +302,30 @@ class Router {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
-        this.router.delete(path, async (request: Request, response: Response) => {
+        this.router.delete(path, async (request: Request, response: Response, next: NextFunction) => {
             const Class = require(file).default;
             const obj = new Class();
 
-            if (!(method in obj)) {
-                throw new Error(`Not found '${method}' in ${file}`);
-            }
-            if (!('$inject' in obj)) {
-                throw new Error(`Not found '$inject'`);
-            }
+            try {
+                if (!(method in obj)) {
+                    throw new Error(`Not found '${method}' in ${file}`);
+                }
+                if (!('$inject' in obj)) {
+                    throw new Error(`Not found '$inject'`);
+                }
 
-            obj.$inject({ ...this.context, request, response });
-
-            if ('init' in obj) {
-                await obj.init();
+                obj.$inject({...this.context, request, response});
+                if ('init' in obj) await obj.init();
+                await obj[method]();
+            } catch (e) {
+                next(e);
             }
-
-            await obj[method]();
         });
     };
 
     /**
      * Get path to controller
-     * 
+     *
      * @param controller
      */
     private getFile(controller: string) {

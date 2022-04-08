@@ -1,11 +1,11 @@
 {
     "name": "express-lite-router",
     "version": "2.1.2",
-    "description": "",
     "main": "dist/index.js",
     "types": "dist",
     "scripts": {
-        "build": "tsc && nodemon --watch src --ext ts --exec ts-node --verbose src/bootstrap.ts"
+        "build": "tsc",
+        "start": "tsc && nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/bootstrap.ts"
     },
     "keywords": [
         "express",
@@ -25,6 +25,7 @@
         "mariadb": "^2.5.6",
         "nodemon": "^2.0.15",
         "ts-node": "^10.4.0",
+        "tsconfig-paths": "^3.14.1",
         "typescript": "^4.5.4"
     }
 }

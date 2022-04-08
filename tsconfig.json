@@ -1,23 +1,44 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "lib": ["ES2020"],
-        "module": "CommonJS",
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny": true,
+        "strictPropertyInitialization": false,
+        "noImplicitThis": false,
+        "useUnknownInCatchVariables": false,
+        "alwaysStrict": true,
+
+        /* Modules */
+        "module": "commonjs",
         "moduleResolution": "node",
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@backend/*": ["./src/backend/*"]
+        },
+        "types": [
+            "node"
+        ],
+
+        /* Emit */
         "declaration": true,
         "outDir": "dist",
         "removeComments": true,
+
+        /* Interop Constraints */
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "strictPropertyInitialization": false,
-        "noImplicitThis": false,
-        "alwaysStrict": true,
-        "skipLibCheck": true,
-        "suppressImplicitAnyIndexErrors": true
+
+        /* Backwards Compatibility */
+        "suppressImplicitAnyIndexErrors": true,
+
+        /* Language and Environment */
+        "target": "esnext",
+        "lib": ["esnext", "dom"],
+
+        /* Completeness */
+        "skipLibCheck": true
     },
     "files": [
         "src/lib/index.ts"

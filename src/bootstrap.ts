@@ -1,6 +1,6 @@
-import express, { Application } from 'express';
-import mariadb from 'mariadb';
-import { Router } from './lib';
+import {Router} from "@/lib";
+import express, {Application} from "express";
+import mariadb from "mariadb";
 
 const router = Router({
     router: express.Router(),
@@ -14,8 +14,7 @@ const router = Router({
         })
     }
 });
-
-router.get('/', 'HomeController@index');
+router.get('/', 'Home/HomeController@index');
 
 const app: Application = express();
 app.use(express.json());
