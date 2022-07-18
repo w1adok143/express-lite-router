@@ -94,13 +94,13 @@ export default class HomeModel extends Model {
 console.log(this.$lang); // 'ua'
 ```
 
-## Can use '$request'
+## Can use 'request'
 
 ```js
 console.log(this.request); // express Request
 ```
 
-## Can use '$response'
+## Can use 'response'
 
 ```js
 this.response; // express Response
