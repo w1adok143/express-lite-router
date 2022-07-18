@@ -43,16 +43,10 @@ import Model from "@backend/Home/HomeModel";
 export default class HomeController extends Controller {
     private model: Model;
 
-    /**
-     * Webhook
-     */
     public async init() {
         this.model = await this.$create(Model, 1);
     }
 
-    /**
-     * Index
-     */
     public async index() {
         try {
             return this.success({rows: await this.model.select()});
@@ -72,34 +66,20 @@ import {Pool} from "mariadb";
 export default class HomeModel extends Model {
     private id;
 
-    /**
-     * HomeModel constructor
-     *
-     * @param id
-     */
     public constructor(id: number) {
         super();
 
         this.id = id;
     }
 
-    /**
-     * Webhook
-     */
     public async init() {
         console.log("Hello, I'm a webhook");
     }
 
-    /**
-     * Select
-     */
     public async select() {
         return await this.pool.query(`SELECT ${this.id} as val`);
     }
 
-    /**
-     * Get pool
-     */
     private get pool(): Pool {
         return this.$context.pool;
     }
@@ -117,13 +97,13 @@ console.log(this.$lang); // 'ua'
 ## Can use '$request'
 
 ```js
-console.log(this.$request); // express Request
+console.log(this.request); // express Request
 ```
 
 ## Can use '$response'
 
 ```js
-this.$response; // express Response
+this.response; // express Response
 ```
 
 ## Can use '$context'
