@@ -2,26 +2,20 @@ import {Router as Express, Request, Response, NextFunction} from "express";
 import path from "path";
 import fs from "fs";
 
-type Context = Record<string, any>;
-type Dir = string;
-type Callback = (request: Request, response: Response, next?: NextFunction) => void;
-type Path = string;
-type Action = string;
-type Message = Record<string, string>;
-interface Config {
-    router: Express, dir: Dir, context?: Context
+namespace router {
+    export type Context = Record<string, any>;
+    export type Callback = (request: Request, response: Response, next?: NextFunction) => void;
+    export interface Config {
+        router: Express,
+        dir: string,
+        context?: Context
+    }
 }
+
 class ApiError extends Error {
     public status;
     public code;
 
-    /**
-     * ApiError constructor
-     *
-     * @param message
-     * @param status
-     * @param code
-     */
     public constructor(message: string, status: number = 400, code: number | string = 0) {
         super(message);
 
@@ -29,24 +23,14 @@ class ApiError extends Error {
         this.code = code;
     }
 }
-abstract class Base {
-    private context: Context;
 
-    /**
-     * Inject
-     *
-     * @param context
-     */
-    public $inject(context: Context) {
+abstract class Base {
+    private context: router.Context;
+
+    public $inject(context: router.Context) {
         this.context = context;
     }
 
-    /**
-     * Create instance by class
-     *
-     * @param model
-     * @param params
-     */
     protected async $create<T extends Model | Record<string, any>, A extends Array<any>>(model: {new (...params: [...A]): T}, ...params: [...A]) {
         const obj = new model(...params);
 
@@ -60,12 +44,7 @@ abstract class Base {
         return obj;
     }
 
-    /**
-     * Get text by lang
-     *
-     * @param message
-     */
-    protected $l(message: Message) {
+    protected $l(message: Record<string, string>) {
         if (!message.hasOwnProperty(this.$lang)) {
             throw new ApiError(`Not found '${this.$lang}' in ${JSON.stringify(message)}`);
         }
@@ -73,59 +52,37 @@ abstract class Base {
         return message[this.$lang];
     }
 
-    /**
-     * Get context
-     */
     protected get $context() {
         return this.context;
     }
 
-    /**
-     * Get lang
-     */
     protected get $lang(): string {
         return this.$context.request.query.lang || this.$context.request.body.lang || 'en';
     }
 }
+
 abstract class Model extends Base {
 
 }
-abstract class Controller extends Base {
 
-    /**
-     * Get request
-     */
-    protected get $request(): Request {
+abstract class Controller extends Base {
+    protected get request(): Request {
         return this.$context.request;
     }
 
-    /**
-     * Get response
-     */
-    protected get $response(): Response {
+    protected get response(): Response {
         return this.$context.response;
     }
 
-    /**
-     * Success response
-     *
-     * @param data
-     * @param status
-     */
     protected success(data = {}, status: number = 200) {
-        return this.$response.status(status).json({
+        return this.response.status(status).json({
             success: true,
             data
         });
     }
 
-    /**
-     * Error response
-     *
-     * @param err
-     */
     protected error(err: ApiError) {
-        return this.$response.status(err.status || 400).json({
+        return this.response.status(err.status || 400).json({
             success: false,
             error: {
                 message: err.message,
@@ -134,47 +91,27 @@ abstract class Controller extends Base {
         });
     }
 }
+
 class Router {
     private readonly router;
     private readonly dir;
     private readonly context;
-    
-    /**
-     * Router constructor
-     * 
-     * @param router
-     * @param dir
-     * @param context
-     */
-    public constructor(router: Express, dir: Dir, context?: Context) {
-        this.router = router;
-        this.dir = dir;
-        this.context = context;
+
+    public constructor(config: router.Config) {
+        this.router = config.router;
+        this.dir = config.dir;
+        this.context = config.context || {};
     }
 
-    /**
-     * Get express router
-     */
     public express() {
         return this.router;
     }
 
-    /**
-     * Use express middleware
-     *
-     * @param callback
-     */
-    public use(callback: Callback) {
+    public use(callback: router.Callback) {
         this.router.use(callback);
     }
 
-    /**
-     * Get request
-     *
-     * @param path
-     * @param action
-     */
-    public get(path: Path, action: Action) {
+    public get(path: string, action: string) {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
@@ -191,7 +128,11 @@ class Router {
                 }
 
                 obj.$inject({...this.context, request, response});
-                if ('init' in obj) await obj.init();
+
+                if ('init' in obj) {
+                    await obj.init();
+                }
+
                 await obj[method]();
             } catch (e) {
                 next(e);
@@ -199,13 +140,7 @@ class Router {
         });
     };
 
-    /**
-     * Post request
-     *
-     * @param path
-     * @param action
-     */
-    public post(path: Path, action: Action) {
+    public post(path: string, action: string) {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
@@ -222,7 +157,11 @@ class Router {
                 }
 
                 obj.$inject({...this.context, request, response});
-                if ('init' in obj) await obj.init();
+
+                if ('init' in obj) {
+                    await obj.init();
+                }
+
                 await obj[method]();
             } catch (e) {
                 next(e);
@@ -230,13 +169,7 @@ class Router {
         });
     }
 
-    /**
-     * Put request
-     *
-     * @param path
-     * @param action
-     */
-    public put(path: Path, action: Action) {
+    public put(path: string, action: string) {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
@@ -253,7 +186,11 @@ class Router {
                 }
 
                 obj.$inject({...this.context, request, response});
-                if ('init' in obj) await obj.init();
+
+                if ('init' in obj) {
+                    await obj.init();
+                }
+
                 await obj[method]();
             } catch (e) {
                 next(e);
@@ -261,13 +198,7 @@ class Router {
         });
     };
 
-    /**
-     * Patch request
-     *
-     * @param path
-     * @param action
-     */
-    public patch(path: Path, action: Action) {
+    public patch(path: string, action: string) {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
@@ -284,7 +215,11 @@ class Router {
                 }
 
                 obj.$inject({...this.context, request, response});
-                if ('init' in obj) await obj.init();
+
+                if ('init' in obj) {
+                    await obj.init();
+                }
+
                 await obj[method]();
             } catch (e) {
                 next(e);
@@ -292,13 +227,7 @@ class Router {
         });
     };
 
-    /**
-     * Delete request
-     *
-     * @param path
-     * @param action
-     */
-    public delete(path: Path, action: Action) {
+    public delete(path: string, action: string) {
         const [controller, method] = action.split('@');
         const file = this.getFile(controller);
 
@@ -315,7 +244,11 @@ class Router {
                 }
 
                 obj.$inject({...this.context, request, response});
-                if ('init' in obj) await obj.init();
+
+                if ('init' in obj) {
+                    await obj.init();
+                }
+
                 await obj[method]();
             } catch (e) {
                 next(e);
@@ -323,11 +256,6 @@ class Router {
         });
     };
 
-    /**
-     * Get path to controller
-     *
-     * @param controller
-     */
     private getFile(controller: string) {
         let _path = path.resolve(this.dir, controller + '.ts');
 
@@ -345,7 +273,7 @@ class Router {
     }
 }
 
-const r = (config: Config): Router => new Router(config.router, config.dir, config.context);
+const r = (config: router.Config): Router => new Router(config);
 
 export {
     r as Router, Controller, Model, ApiError
